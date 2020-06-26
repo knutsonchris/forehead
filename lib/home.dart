@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'play.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 Map<String, List<String>> decks = {
   "cars": ["lambo", "F150"],
@@ -39,7 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Center(
               child: Text(
                 decks.keys.toList()[index],
-                style: Theme.of(context).textTheme.headline5,
+                style: GoogleFonts.ubuntu(fontSize: 30),
               ),
             ),
           )),
