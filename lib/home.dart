@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'play.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/services.dart';
 
 Map<String, List<String>> decks = {
   "cars": ["lambo", "F150"],
@@ -24,11 +25,12 @@ class _MyHomePageState extends State<MyHomePage> {
     String deckName = decks.keys.toList()[index];
     return GestureDetector(
       onTap: () {
+        HapticFeedback.heavyImpact();
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => PlayView(
-                  title: deckName, words: decks[deckName])),
+              builder: (context) =>
+                  PlayView(title: deckName, words: decks[deckName])),
         );
       },
       child: Container(

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:sensors/sensors.dart';
 import 'dart:async';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/services.dart';
 
 class PlayView extends StatefulWidget {
   PlayView({Key key, this.title, this.words}) : super(key: key);
@@ -68,6 +69,7 @@ class _PlayViewState extends State<PlayView> {
       gameOverReason = "time is up!";
     }
 
+    HapticFeedback.vibrate();
     setState(() {
       gameOver = true;
       currentWidget = playCard(gameOverReason, Colors.red, false);
@@ -144,6 +146,8 @@ class _PlayViewState extends State<PlayView> {
         setState(() {
           currentWidget = playCard(countdown.toString(), Colors.blue, false);
         });
+
+        HapticFeedback.heavyImpact();
         await Future.delayed(Duration(seconds: 1));
         countdown--;
       }
@@ -160,6 +164,7 @@ class _PlayViewState extends State<PlayView> {
       // a successful guess
       if (zAxis < -9) {
         // TODO: play success noise
+        HapticFeedback.heavyImpact();
         // add a success to our results
         results[widget.words[currentWord]] = true;
         // wait until they tilt the phone back onto their forehead
@@ -171,6 +176,7 @@ class _PlayViewState extends State<PlayView> {
         while (zAxis < -2) {
           await Future.delayed(Duration(milliseconds: 500));
         }
+        HapticFeedback.heavyImpact();
 
         // increment the word count and check if we have hit the end of the deck
         currentWord++;
@@ -188,6 +194,7 @@ class _PlayViewState extends State<PlayView> {
       if (zAxis > 9) {
         // player has tilted phone backwards, a pass
         // TODO: play pass noise
+        HapticFeedback.heavyImpact();
         // add a pass to our results
         results[widget.words[currentWord]] = false;
         // wait until they tilt the phone back onto their foreheadR
@@ -200,6 +207,7 @@ class _PlayViewState extends State<PlayView> {
         while (zAxis > 2) {
           await Future.delayed(Duration(milliseconds: 500));
         }
+        HapticFeedback.heavyImpact();
 
         // increment the word count and check if we have hit the end of the deck
         currentWord++;
