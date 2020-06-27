@@ -47,6 +47,7 @@ class _PlayViewState extends State<PlayView> {
     currentWidget = Text(";)");
     gameController();
     timeController();
+    widget.words.shuffle();
     super.initState();
   }
 
@@ -88,7 +89,7 @@ class _PlayViewState extends State<PlayView> {
     }
     while (timeLeft != 0 && !gameOver) {
       await Future.delayed(Duration(seconds: 1));
-      if (timeLeft <= 10){
+      if (timeLeft <= 10) {
         tickSound();
       }
       setState(() {
@@ -265,6 +266,7 @@ class _PlayViewState extends State<PlayView> {
   Widget playCard(String word, Color color, bool showTimer) {
     return GestureDetector(
       onTap: () {
+        /*
         if (currentWord == widget.words.length - 1) {
           Navigator.of(context).pop();
         } else {
@@ -272,6 +274,7 @@ class _PlayViewState extends State<PlayView> {
             currentWord++;
           });
         }
+        */
       },
       child: RotatedBox(
           quarterTurns: 1,

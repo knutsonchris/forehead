@@ -52,6 +52,9 @@ flutter:
     - assets/end.mp3
     - assets/tick.mp3
     - assets/pass.mp3
+    - assets/start.mp3
+    - assets/words/3k.txt
+    - assets/words/466k.txt
 
   # To add assets to your application, add an assets section, like this:
   # assets:

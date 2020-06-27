@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'play.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
+import 'package:audioplayers/audio_cache.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'dart:core';
+import 'package:flutter/cupertino.dart';
 
 Map<String, List<String>> decks = {
   "cars": ["lambo", "F150"],
@@ -21,17 +25,116 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  @override
+  void initState() {
+    super.initState();
+    loadDecks();
+  }
+
+  Future<void> loadDecks() async {
+    String threek = await rootBundle.loadString('assets/words/3k.txt');
+    String four66k = await rootBundle.loadString('assets/words/466k.txt');
+    decks["3k"] = threek.split("\n");
+    decks["466k"] = four66k.split("\n");
+    decks["create new"] = [];
+  }
+
+  Future<AudioPlayer> startSound() async {
+    AudioCache cache = new AudioCache();
+    return await cache.play("start.mp3");
+  }
+
   Widget deckCard(int index) {
     String deckName = decks.keys.toList()[index];
     return GestureDetector(
       onTap: () {
         HapticFeedback.heavyImpact();
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  PlayView(title: deckName, words: decks[deckName])),
-        );
+        if (deckName == "create new") {
+          print("new");
+          Navigator.of(context).push(new MaterialPageRoute<Null>(
+              builder: (BuildContext context) {
+                final deckNameController = TextEditingController();
+                final textController = TextEditingController();
+
+                return Scaffold(
+                  appBar: AppBar(
+                    iconTheme: IconThemeData(color: Colors.black),
+                    backgroundColor: Colors.white,
+                    title: Text(
+                      "new deck",
+                      style: GoogleFonts.ubuntu(color: Colors.black),
+                    ),
+                  ),
+                  body: Column(
+                    // mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Padding(
+                          padding:
+                              EdgeInsets.only(top: 30, left: 30, right: 30),
+                          child: Text(
+                            "enter a deck name",
+                            style: GoogleFonts.ubuntu(
+                                color: Colors.black, fontSize: 30),
+                          )),
+                      Padding(
+                        padding:
+                            EdgeInsets.only(left: 30, right: 30, bottom: 30),
+                        child: TextField(
+                          controller: deckNameController,
+                        ),
+                      ),
+                      Padding(
+                          padding: EdgeInsets.only(left: 30, right: 30),
+                          child: Text(
+                            "enter a list of words\neach on a new line",
+                            style: GoogleFonts.ubuntu(
+                                color: Colors.black, fontSize: 30),
+                            textAlign: TextAlign.center,
+                          )),
+                      Padding(
+                        padding:
+                            EdgeInsets.only(left: 30, right: 30, bottom: 30),
+                        child: TextField(
+                          controller: textController,
+                          keyboardType: TextInputType.multiline,
+                          maxLines: null,
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(left: 30, right: 30),
+                        child: Center(
+                          child: CupertinoButton(
+                            onPressed: () {
+                              setState(() {
+                                decks[deckNameController.text] =
+                                    textController.text.split("\n");
+
+                                Navigator.of(context).pop();
+                              });
+                            },
+                            color: CupertinoColors.activeBlue,
+                            child: Text(
+                              "save",
+                              style: GoogleFonts.ubuntu(),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+              fullscreenDialog: true));
+        } else {
+          startSound();
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    PlayView(title: deckName, words: decks[deckName])),
+          );
+        }
       },
       child: Container(
           padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
@@ -63,6 +166,17 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(backgroundColor: Colors.black, body: deckGrid());
+    return FutureBuilder(
+      future: loadDecks(),
+      builder: (context, snap) {
+        if (snap.connectionState == ConnectionState.none &&
+            snap.hasData == null) {
+          return Center(
+            child: Text("loading"),
+          );
+        }
+        return Scaffold(backgroundColor: Colors.black, body: deckGrid());
+      },
+    );
   }
 }
