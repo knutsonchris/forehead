@@ -5,6 +5,8 @@ import 'package:sensors/sensors.dart';
 import 'dart:async';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
+import 'package:audioplayers/audio_cache.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class PlayView extends StatefulWidget {
   PlayView({Key key, this.title, this.words}) : super(key: key);
@@ -54,6 +56,31 @@ class _PlayViewState extends State<PlayView> {
     _accelerometer.cancel();
   }
 
+  Future<AudioPlayer> correctSound() async {
+    AudioCache cache = new AudioCache();
+    return await cache.play("correct.mp3");
+  }
+
+  Future<AudioPlayer> scoreSound() async {
+    AudioCache cache = new AudioCache();
+    return await cache.play("score.mp3");
+  }
+
+  Future<AudioPlayer> endSound() async {
+    AudioCache cache = new AudioCache();
+    return await cache.play("end.mp3");
+  }
+
+  Future<AudioPlayer> tickSound() async {
+    AudioCache cache = new AudioCache();
+    return await cache.play("tick.mp3");
+  }
+
+  Future<AudioPlayer> passSound() async {
+    AudioCache cache = new AudioCache();
+    return await cache.play("pass.mp3");
+  }
+
   Future<void> timeController() async {
     while (countdown > 0) {
       await Future.delayed(Duration(milliseconds: 200));
@@ -61,6 +88,9 @@ class _PlayViewState extends State<PlayView> {
     }
     while (timeLeft != 0 && !gameOver) {
       await Future.delayed(Duration(seconds: 1));
+      if (timeLeft <= 10){
+        tickSound();
+      }
       setState(() {
         timeLeft--;
       });
@@ -69,6 +99,7 @@ class _PlayViewState extends State<PlayView> {
       gameOverReason = "time is up!";
     }
 
+    endSound();
     HapticFeedback.vibrate();
     setState(() {
       gameOver = true;
@@ -77,6 +108,8 @@ class _PlayViewState extends State<PlayView> {
 
     await Future.delayed(Duration(seconds: 3));
 
+    scoreSound();
+    HapticFeedback.heavyImpact();
     await showModalBottomSheet(
         // isScrollControlled: true,
         context: context,
@@ -118,6 +151,7 @@ class _PlayViewState extends State<PlayView> {
               ));
         });
 
+    HapticFeedback.heavyImpact();
     Navigator.of(context).pop();
   }
 
@@ -143,6 +177,7 @@ class _PlayViewState extends State<PlayView> {
 
       // countdown from 3, playing a sound
       while (countdown > 0) {
+        tickSound();
         setState(() {
           currentWidget = playCard(countdown.toString(), Colors.blue, false);
         });
@@ -163,7 +198,7 @@ class _PlayViewState extends State<PlayView> {
 
       // a successful guess
       if (zAxis < -9) {
-        // TODO: play success noise
+        correctSound();
         HapticFeedback.heavyImpact();
         // add a success to our results
         results[widget.words[currentWord]] = true;
@@ -193,7 +228,7 @@ class _PlayViewState extends State<PlayView> {
       // a pass
       if (zAxis > 9) {
         // player has tilted phone backwards, a pass
-        // TODO: play pass noise
+        passSound();
         HapticFeedback.heavyImpact();
         // add a pass to our results
         results[widget.words[currentWord]] = false;
