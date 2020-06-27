@@ -7,6 +7,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'dart:core';
 import 'package:flutter/cupertino.dart';
 
+// TODO: this is a super sloppy way to do things, would be nice to put this somewhere else
 Map<String, List<String>> decks = {
   "cars": ["lambo", "F150"],
   "sports": ["soccer", "volleyball"],
@@ -28,29 +29,36 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    // TODO: this isn't needed here anymore since we load the decks with a FutureBuilder
     loadDecks();
   }
 
+  // loadDecks will grab word lists shipped as assets and slam them into that messy decks map
   Future<void> loadDecks() async {
     String threek = await rootBundle.loadString('assets/words/3k.txt');
     String four66k = await rootBundle.loadString('assets/words/466k.txt');
+    // split the new line delimited strings into lists
     decks["3k"] = threek.split("\n");
     decks["466k"] = four66k.split("\n");
+    // this is also super hacky, our deck card widget will key off of the "create new" string and open up an add new deck dialog instead of starting a game
     decks["create new"] = [];
   }
 
+  // this audio player allows us to play a sound without holding up execution of our single thread
   Future<AudioPlayer> startSound() async {
     AudioCache cache = new AudioCache();
     return await cache.play("start.mp3");
   }
 
+  // this widget defines the actions and appearance of each card in our deck
   Widget deckCard(int index) {
     String deckName = decks.keys.toList()[index];
     return GestureDetector(
       onTap: () {
         HapticFeedback.heavyImpact();
+        // it really would be nice to come up with a better solution for this, but ya know, deadline development
         if (deckName == "create new") {
-          print("new");
+          // this sloppily pulls up a full screen window from which we can add a new deck
           Navigator.of(context).push(new MaterialPageRoute<Null>(
               builder: (BuildContext context) {
                 final deckNameController = TextEditingController();
@@ -65,9 +73,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       style: GoogleFonts.ubuntu(color: Colors.black),
                     ),
                   ),
-                  body: Column(
-                    // mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                  body: ListView(
+                    shrinkWrap: true,
                     children: [
                       Padding(
                           padding:
@@ -76,6 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             "enter a deck name",
                             style: GoogleFonts.ubuntu(
                                 color: Colors.black, fontSize: 30),
+                            textAlign: TextAlign.center,
                           )),
                       Padding(
                         padding:
@@ -107,9 +115,9 @@ class _MyHomePageState extends State<MyHomePage> {
                           child: CupertinoButton(
                             onPressed: () {
                               setState(() {
+                                // grab the text from our TextEditingControllers and slam it into our sloppy map
                                 decks[deckNameController.text] =
                                     textController.text.split("\n");
-
                                 Navigator.of(context).pop();
                               });
                             },
@@ -127,11 +135,13 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               fullscreenDialog: true));
         } else {
+          // lol this else was originally the only functionality of each deck card, but hey gotta do what ya gotta do
           startSound();
           Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) =>
+                    // bring up a new PlayView with the desired deck
                     PlayView(title: deckName, words: decks[deckName])),
           );
         }
@@ -152,6 +162,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  //deckGrid will make a deckCard for each item in our decks map
   Widget deckGrid() {
     return GridView.count(
       // Create a grid with 2 columns. If you change the scrollDirection to
@@ -166,6 +177,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // this future builder will run the loadDecks function and wait for it to finish grabbing the word lists off thee disk before rendering  the cards
     return FutureBuilder(
       future: loadDecks(),
       builder: (context, snap) {

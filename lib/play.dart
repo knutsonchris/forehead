@@ -19,18 +19,19 @@ class PlayView extends StatefulWidget {
 }
 
 class _PlayViewState extends State<PlayView> {
-  int currentWord;
-  int timeLeft;
-  bool playerReady;
-  bool gameOver;
-  String gameOverReason;
-  int countdown;
-  StreamSubscription<AccelerometerEvent> _accelerometer;
+  // not really sure if this is necessary to first define then populate the variables
+  // but i saw a guy who was smarter than me doing it once so like any smart dev i copied them
+  int currentWord; // the word that will be shown in the card
+  int timeLeft; // will act as our timer
+  bool playerReady; // will indicate when the user has put the device up to their head
+  bool gameOver; // will indicate when either there are no more cards in the deck or the time has run out
+  String gameOverReason; // will be populated with  text as to why the game ended, for example when the time runs out
+  int countdown; // poorly named variable for the 3 second countdown in the  beginning
+  StreamSubscription<AccelerometerEvent> _accelerometer; // this will allow us to continually monitor the values coming from the accelerometer
   double yAxis;
   double zAxis;
-  LinkedHashMap<String, bool> results;
-
-  Widget currentWidget;
+  LinkedHashMap<String, bool> results; // will keep track of which words the user was able guess and which they passed, LinkedHashMap to preserve order
+  Widget currentWidget; // this allows us to swap out the card being displayed with a new one with updated content
 
   void initState() {
     playerReady = false;
@@ -44,7 +45,9 @@ class _PlayViewState extends State<PlayView> {
       zAxis = event.z;
     });
 
+    // at this point in the execution, there is no context. we can't use any text themes so just use some dummy widget until the rest of the jazz loads
     currentWidget = Text(";)");
+    // kick off our two control loops
     gameController();
     timeController();
     widget.words.shuffle();
@@ -57,6 +60,7 @@ class _PlayViewState extends State<PlayView> {
     _accelerometer.cancel();
   }
 
+  // bunch of audio players to play sounds ;D
   Future<AudioPlayer> correctSound() async {
     AudioCache cache = new AudioCache();
     return await cache.play("correct.mp3");
@@ -82,11 +86,14 @@ class _PlayViewState extends State<PlayView> {
     return await cache.play("pass.mp3");
   }
 
+  // this does two functions equally awkwardly
+  // will give us a countdown and end game play when the timer runs out
   Future<void> timeController() async {
     while (countdown > 0) {
       await Future.delayed(Duration(milliseconds: 200));
       continue;
     }
+    // if the game is ended by the game controller before the time runs out, don't bother keeping track of the time
     while (timeLeft != 0 && !gameOver) {
       await Future.delayed(Duration(seconds: 1));
       if (timeLeft <= 10) {
@@ -109,8 +116,10 @@ class _PlayViewState extends State<PlayView> {
 
     await Future.delayed(Duration(seconds: 3));
 
+    // this feels awkward to shove here but it is the easiest
     scoreSound();
     HapticFeedback.heavyImpact();
+    // show the user their results in a bottom modal, return to previous screen when they are done looking
     await showModalBottomSheet(
         // isScrollControlled: true,
         context: context,
@@ -156,6 +165,7 @@ class _PlayViewState extends State<PlayView> {
     Navigator.of(context).pop();
   }
 
+  // game controller will do it's best to iterate through the words in the deck, keeping track of successful and unsuccessful guesses
   Future<void> gameController() async {
     print("gameController start");
     while (true) {
@@ -263,6 +273,7 @@ class _PlayViewState extends State<PlayView> {
     });
   }
 
+  // defines the appearance and behaviour of the main play card widget
   Widget playCard(String word, Color color, bool showTimer) {
     return GestureDetector(
       onTap: () {
@@ -276,6 +287,7 @@ class _PlayViewState extends State<PlayView> {
         }
         */
       },
+      // flip the thing on it's side
       child: RotatedBox(
           quarterTurns: 1,
           child: Container(
@@ -314,6 +326,7 @@ class _PlayViewState extends State<PlayView> {
     );
   }
 
+  // each word on the result page will have it's own appearance depending on if the user guessed it correctly
   Widget wordResult(String word, bool success) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
