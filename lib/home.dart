@@ -9,13 +9,8 @@ import 'package:flutter/cupertino.dart';
 
 // TODO: this is a super sloppy way to do things, would be nice to put this somewhere else
 Map<String, List<String>> decks = {
-  "cars": ["lambo", "F150"],
-  "sports": ["soccer", "volleyball"],
-  "animals": ["cat", "dog"],
-  "drinks": ["coffee", "tea"],
-  "colors": ["black", "white"],
-  "emotions": ["happy", "sad"],
-  "shoes": ["flip flop", "tennis shoe"],
+// this is also super hacky, our deck card widget will key off of the "create new" string and open up an add new deck dialog instead of starting a game
+  "create new": [],
 };
 
 class MyHomePage extends StatefulWidget {
@@ -37,11 +32,30 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> loadDecks() async {
     String threek = await rootBundle.loadString('assets/words/3k.txt');
     String four66k = await rootBundle.loadString('assets/words/466k.txt');
+    String sevenk = await rootBundle.loadString('assets/words/7k.txt');
+    String tenk = await rootBundle.loadString('assets/words/10k.txt');
+    String animals = await rootBundle.loadString('assets/words/animals.txt');
+    String animals2 = await rootBundle.loadString('assets/words/animals2.txt');
+    String easy = await rootBundle.loadString('assets/words/easy.txt');
+    String medium = await rootBundle.loadString('assets/words/medium.txt');
+    String hard = await rootBundle.loadString('assets/words/hard.txt');
+    String objects = await rootBundle.loadString('assets/words/objects.txt');
+    String persons = await rootBundle.loadString('assets/words/persons.txt');
+    String verbs = await rootBundle.loadString('assets/words/verbs.txt');
+
     // split the new line delimited strings into lists
     decks["3k"] = threek.split("\n");
     decks["466k"] = four66k.split("\n");
-    // this is also super hacky, our deck card widget will key off of the "create new" string and open up an add new deck dialog instead of starting a game
-    decks["create new"] = [];
+    decks['7k'] = sevenk.split("\n");
+    decks['10k'] = tenk.split("\n");
+    decks['animals'] = animals.split("\n");
+    decks['animals 2'] = animals2.split("\n");
+    decks['easy'] = easy.split("\n");
+    decks['medium'] = medium.split("\n");
+    decks['hard'] = hard.split("\n");
+    decks['objects'] = objects.split("\n");
+    decks['persons'] = persons.split("\n");
+    decks['verbs'] = verbs.split("\n");
   }
 
   // this audio player allows us to play a sound without holding up execution of our single thread
