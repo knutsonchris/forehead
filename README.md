@@ -22,5 +22,7 @@ you have 60 seconds to guess as many words as possible
 
 was written as fast as possible so that we wouldn't have to pay for an already existing app
 
+just about every widget size was designed for a 6.5" iphone, will likely look strange on different screen sizes
+
 sounds were provided for free from [zapsplat](https://www.zapsplat.com/) 
 
