@@ -6,6 +6,9 @@ import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'dart:core';
 import 'package:flutter/cupertino.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+import 'dart:convert';
 
 // TODO: this is a super sloppy way to do things, would be nice to put this somewhere else
 Map<String, List<String>> decks = {
@@ -56,6 +59,41 @@ class _MyHomePageState extends State<MyHomePage> {
     decks['objects'] = objects.split("\n");
     decks['persons'] = persons.split("\n");
     decks['verbs'] = verbs.split("\n");
+
+    // look for and load any saved decks
+    Map<String, List<String>> savedDecks = await loadSavedDecks();
+    savedDecks.forEach((key, value) {
+      decks[key] = value;
+    });
+  }
+
+  Future<Map<String, List<String>>> loadSavedDecks() async {
+    Map<String, List<String>> thegoodies = {};
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final path = directory.path;
+      File savedDecks = File('$path/decks.json');
+      String contents = savedDecks.readAsStringSync();
+      final parsed = json.decode(contents);
+      parsed.forEach((key, value) {
+        List<dynamic> dlist = value;
+        List<String> stringies = dlist.map((s) => s as String).toList();
+        thegoodies[key] = stringies;
+      });
+    } catch (e) {
+      print("could not load decks:" + e);
+    }
+    return thegoodies;
+  }
+
+  Future<void> saveNewDeck(String deckName, List<String> deckWords) async {
+    final directory = await getApplicationDocumentsDirectory();
+    final path = directory.path;
+    File savedDecks = File('$path/decks.json');
+    Map<String, List<String>> goodies = await loadSavedDecks();
+    goodies[deckName] = deckWords;
+    String jsonDecks = json.encode(goodies);
+    savedDecks.writeAsStringSync(jsonDecks);
   }
 
   // this audio player allows us to play a sound without holding up execution of our single thread
@@ -134,6 +172,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                     textController.text.split("\n");
                                 Navigator.of(context).pop();
                               });
+                              // slam the new deck into our saved decks json
+                              saveNewDeck(deckNameController.text,
+                                  textController.text.split("\n"));
                             },
                             color: CupertinoColors.activeBlue,
                             child: Text(
