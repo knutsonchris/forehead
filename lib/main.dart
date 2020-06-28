@@ -13,6 +13,7 @@ class MyApp extends StatelessWidget {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+    SystemChrome.setEnabledSystemUIOverlays([]);
     return MaterialApp(
       title: 'forehead',
       theme: ThemeData(

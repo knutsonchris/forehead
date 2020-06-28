@@ -23,15 +23,21 @@ class _PlayViewState extends State<PlayView> {
   // but i saw a guy who was smarter than me doing it once so like any smart dev i copied them
   int currentWord; // the word that will be shown in the card
   int timeLeft; // will act as our timer
-  bool playerReady; // will indicate when the user has put the device up to their head
-  bool gameOver; // will indicate when either there are no more cards in the deck or the time has run out
-  String gameOverReason; // will be populated with  text as to why the game ended, for example when the time runs out
+  bool
+      playerReady; // will indicate when the user has put the device up to their head
+  bool
+      gameOver; // will indicate when either there are no more cards in the deck or the time has run out
+  String
+      gameOverReason; // will be populated with  text as to why the game ended, for example when the time runs out
   int countdown; // poorly named variable for the 3 second countdown in the  beginning
-  StreamSubscription<AccelerometerEvent> _accelerometer; // this will allow us to continually monitor the values coming from the accelerometer
+  StreamSubscription<AccelerometerEvent>
+      _accelerometer; // this will allow us to continually monitor the values coming from the accelerometer
   double yAxis;
   double zAxis;
-  LinkedHashMap<String, bool> results; // will keep track of which words the user was able guess and which they passed, LinkedHashMap to preserve order
-  Widget currentWidget; // this allows us to swap out the card being displayed with a new one with updated content
+  LinkedHashMap<String, bool>
+      results; // will keep track of which words the user was able guess and which they passed, LinkedHashMap to preserve order
+  Widget
+      currentWidget; // this allows us to swap out the card being displayed with a new one with updated content
 
   void initState() {
     playerReady = false;
@@ -121,7 +127,7 @@ class _PlayViewState extends State<PlayView> {
     HapticFeedback.heavyImpact();
     // show the user their results in a bottom modal, return to previous screen when they are done looking
     await showModalBottomSheet(
-        // isScrollControlled: true,
+        isScrollControlled: true,
         context: context,
         builder: (builder) {
           int numberCorrect = 0;
@@ -138,18 +144,22 @@ class _PlayViewState extends State<PlayView> {
                     borderRadius: new BorderRadius.only(
                         topLeft: const Radius.circular(10.0),
                         topRight: const Radius.circular(10.0))),
-                child: Column(
+                child: ListView(
+                  shrinkWrap: true,
                   children: [
                     Padding(
-                      padding: EdgeInsets.only(top: 30),
-                      child: Text(
-                        "score: $numberCorrect",
-                        style: GoogleFonts.ubuntu(
-                            fontSize: 90, color: Colors.white),
-                      ),
-                    ),
+                        padding: EdgeInsets.only(top: 30),
+                        child: Center(
+                          child: Text(
+                            "score: $numberCorrect",
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.ubuntu(
+                                fontSize: 90, color: Colors.white),
+                          ),
+                        )),
                     new ListView.builder(
                         shrinkWrap: true,
+                        physics: ClampingScrollPhysics(),
                         padding: EdgeInsets.only(top: 30),
                         itemCount: results.length,
                         itemBuilder: (BuildContext ctxt, int index) {
@@ -307,6 +317,7 @@ class _PlayViewState extends State<PlayView> {
                   children: [
                     Center(
                       child: Text(word,
+                          textAlign: TextAlign.center,
                           style: GoogleFonts.ubuntu(
                               fontSize: 90, color: Colors.white)),
                     ),
@@ -334,6 +345,9 @@ class _PlayViewState extends State<PlayView> {
       children: [
         Text(
           word,
+          softWrap: true,
+          overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.center,
           style: GoogleFonts.ubuntu(
               fontSize: 50, color: success ? Colors.white : Colors.blueGrey),
         ),
