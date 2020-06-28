@@ -1,16 +1,26 @@
 # forehead
 
-A new Flutter project.
+implementation of a charades game in flutter
 
-## Getting Started
+### how to play
 
-This project is a starting point for a Flutter application.
+pick a category
 
-A few resources to get you started if this is your first Flutter project:
+place the phone on your forehead
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+have your friends try to explain the word on the screen without saying the word
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+if you guess correctly, tilt the screen towards the floor to move on to the next word
+
+if you are stumped, tilt the screen towards the ceiling to skip the word
+
+you have 60 seconds to guess as many words as possible
+
+
+
+### notes
+
+was written as fast as possible so that we wouldn't have to pay for an already existing app
+
+sounds were provided for free from [zapsplat](https://www.zapsplat.com/) 
+
