@@ -188,6 +188,11 @@ class _PlayViewState extends State<PlayView> {
       print("yAxis: $yAxis");
       print("zAxis: $zAxis");
 
+      // Needed in case the accelerometer is not ready yet
+      if (yAxis == null || zAxis == null) {
+        continue;
+      }
+
       // wait until the player tilts the phone on its side (on their forehead)
       if (!playerReady) {
         if ((yAxis <= 4 && yAxis >= -4) && (zAxis <= 4 && zAxis >= -4)) {
