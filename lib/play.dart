@@ -20,23 +20,26 @@ class PlayView extends StatefulWidget {
 class _PlayViewState extends State<PlayView> {
   // not really sure if this is necessary to first define then populate the variables
   // but i saw a guy who was smarter than me doing it once so like any smart dev i copied them
-  int currentWord; // the word that will be shown in the card
-  int timeLeft; // will act as our timer
-  bool
-      playerReady; // will indicate when the user has put the device up to their head
-  bool
-      gameOver; // will indicate when either there are no more cards in the deck or the time has run out
-  String
-      gameOverReason; // will be populated with  text as to why the game ended, for example when the time runs out
-  int countdown; // poorly named variable for the 3 second countdown in the  beginning
-  StreamSubscription<AccelerometerEvent>
-      _accelerometer; // this will allow us to continually monitor the values coming from the accelerometer
+  // currentWord is the word that will be shown in the card
+  int currentWord;
+  // timeLeft will act as our timer
+  int timeLeft;
+  // playerReady will indicate when the user has put the device up to their head
+  bool playerReady;
+  // gameOver will indicate when either there are no more cards in the deck or the time has run out
+  bool gameOver;
+  // gameOverReason will be populated with  text as to why the game ended, for example when the time runs out
+  String gameOverReason;
+  // countdown is a poorly named variable for the 3 second countdown in the  beginning
+  int countdown;
+  // _accelerometer will allow us to continually monitor the values coming from the accelerometer
+  StreamSubscription<AccelerometerEvent> _accelerometer;
   double yAxis;
   double zAxis;
-  LinkedHashMap<String, bool>
-      results; // will keep track of which words the user was able guess and which they passed, LinkedHashMap to preserve order
-  Widget
-      currentWidget; // this allows us to swap out the card being displayed with a new one with updated content
+  // results will keep track of which words the user was able guess and which they passed, LinkedHashMap to preserve order
+  LinkedHashMap<String, bool> results;
+  // currentWidget allows us to swap out the card being displayed with a new one with updated content
+  Widget currentWidget;
 
   void initState() {
     playerReady = false;
@@ -289,55 +292,57 @@ class _PlayViewState extends State<PlayView> {
 
   // defines the appearance and behaviour of the main play card widget
   Widget playCard(String word, Color color, bool showTimer) {
-    return GestureDetector(
-      onTap: () {
-        /*
-        if (currentWord == widget.words.length - 1) {
-          Navigator.of(context).pop();
-        } else {
-          setState(() {
-            currentWord++;
-          });
-        }
-        */
-      },
-      // flip the thing on it's side
-      child: RotatedBox(
-          quarterTurns: 1,
-          child: Container(
-              padding: EdgeInsets.fromLTRB(60, 30, 60, 30),
-              height: double.maxFinite,
-              width: double.maxFinite,
-              child: Card(
-                shape: StadiumBorder(
-                  side: BorderSide(
-                    color: Colors.white,
-                    width: 10.0,
-                  ),
-                ),
-                color: color,
-                elevation: 5,
-                child: Stack(
-                  children: [
-                    Center(
-                      child: Text(word,
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.ubuntu(
-                              fontSize: 90, color: Colors.white)),
+    // use a Stack here so we can put the back button on top of the play card
+    return Stack(
+      children: [
+        // position the back button in the top right corner, which when rotated, becomes the top left...
+        Positioned(
+          right: 0,
+          top: 0,
+          child: TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                print("tapped the 'go back' button'");
+              },
+              child: RotatedBox(quarterTurns: 1, child: Text("go back"))),
+        ),
+        RotatedBox(
+            quarterTurns: 1,
+            child: Container(
+                padding: EdgeInsets.fromLTRB(60, 30, 60, 30),
+                height: double.maxFinite,
+                width: double.maxFinite,
+                child: Card(
+                  shape: StadiumBorder(
+                    side: BorderSide(
+                      color: Colors.white,
+                      width: 10.0,
                     ),
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Padding(
-                          padding: EdgeInsets.only(bottom: 40),
-                          child: Text(
-                            showTimer ? timeLeft.toString() : "",
+                  ),
+                  color: color,
+                  elevation: 5,
+                  child: Stack(
+                    children: [
+                      Center(
+                        child: Text(word,
+                            textAlign: TextAlign.center,
                             style: GoogleFonts.ubuntu(
-                                fontSize: 70, color: Colors.white),
-                          )),
-                    )
-                  ],
-                ),
-              ))),
+                                fontSize: 90, color: Colors.white)),
+                      ),
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Padding(
+                            padding: EdgeInsets.only(bottom: 40),
+                            child: Text(
+                              showTimer ? timeLeft.toString() : "",
+                              style: GoogleFonts.ubuntu(
+                                  fontSize: 70, color: Colors.white),
+                            )),
+                      )
+                    ],
+                  ),
+                ))),
+      ],
     );
   }
 
@@ -370,6 +375,7 @@ class _PlayViewState extends State<PlayView> {
     if (!playerReady) {
       currentWidget = playCard("place on forehead", Colors.blue, false);
     }
-    return Scaffold(backgroundColor: Colors.black, body: currentWidget);
+    return SafeArea(
+        child: Scaffold(backgroundColor: Colors.black, body: currentWidget));
   }
 }
