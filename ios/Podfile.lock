@@ -1,32 +1,33 @@
 PODS:
-  - audioplayers (0.0.1):
+  - audioplayers_darwin (0.0.1):
     - Flutter
   - Flutter (1.0.0)
-  - path_provider (0.0.1):
+  - path_provider_foundation (0.0.1):
     - Flutter
+    - FlutterMacOS
   - sensors (0.0.1):
     - Flutter
 
 DEPENDENCIES:
-  - audioplayers (from `.symlinks/plugins/audioplayers/ios`)
+  - audioplayers_darwin (from `.symlinks/plugins/audioplayers_darwin/ios`)
   - Flutter (from `Flutter`)
-  - path_provider (from `.symlinks/plugins/path_provider/ios`)
+  - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/ios`)
   - sensors (from `.symlinks/plugins/sensors/ios`)
 
 EXTERNAL SOURCES:
-  audioplayers:
-    :path: ".symlinks/plugins/audioplayers/ios"
+  audioplayers_darwin:
+    :path: ".symlinks/plugins/audioplayers_darwin/ios"
   Flutter:
     :path: Flutter
-  path_provider:
-    :path: ".symlinks/plugins/path_provider/ios"
+  path_provider_foundation:
+    :path: ".symlinks/plugins/path_provider_foundation/ios"
   sensors:
     :path: ".symlinks/plugins/sensors/ios"
 
 SPEC CHECKSUMS:
-  audioplayers: 84f968cea3f2deab00ec4f8ff53358b3c0b3992c
+  audioplayers_darwin: 877d9a4d06331c5c374595e46e16453ac7eafa40
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
-  path_provider: abfe2b5c733d04e238b0d8691db0cfd63a27a93c
+  path_provider_foundation: eaf5b3e458fc0e5fbb9940fb09980e853fe058b8
   sensors: 84eb7a30e47a649e4172b71d6e81be614c280336
 
 PODFILE CHECKSUM: ef19549a9bc3046e7bb7d2fab4d021637c0c58a3

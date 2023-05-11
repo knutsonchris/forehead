@@ -5,7 +5,6 @@ import 'package:sensors/sensors.dart';
 import 'dart:async';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
-import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 
 class PlayView extends StatefulWidget {
@@ -67,29 +66,29 @@ class _PlayViewState extends State<PlayView> {
   }
 
   // bunch of audio players to play sounds ;D
-  Future<AudioPlayer> correctSound() async {
-    AudioCache cache = new AudioCache();
-    return await cache.play("correct.mp3");
+  correctSound() async {
+    AudioPlayer player = new AudioPlayer();
+    return await player.play(AssetSource("correct.mp3"));
   }
 
-  Future<AudioPlayer> scoreSound() async {
-    AudioCache cache = new AudioCache();
-    return await cache.play("score.mp3");
+  scoreSound() async {
+    AudioPlayer player = new AudioPlayer();
+    return await player.play(AssetSource("score.mp3"));
   }
 
-  Future<AudioPlayer> endSound() async {
-    AudioCache cache = new AudioCache();
-    return await cache.play("end.mp3");
+  endSound() async {
+    AudioPlayer player = new AudioPlayer();
+    return await player.play(AssetSource("end.mp3"));
   }
 
-  Future<AudioPlayer> tickSound() async {
-    AudioCache cache = new AudioCache();
-    return await cache.play("tick.mp3");
+  tickSound() async {
+    AudioPlayer player = new AudioPlayer();
+    return await player.play(AssetSource("tick.mp3"));
   }
 
-  Future<AudioPlayer> passSound() async {
-    AudioCache cache = new AudioCache();
-    return await cache.play("pass.mp3");
+  passSound() async {
+    AudioPlayer player = new AudioPlayer();
+    return await player.play(AssetSource("pass.mp3"));
   }
 
   // this does two functions equally awkwardly

@@ -29,12 +29,32 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.3
   sensors: ^0.4.2+2
-  google_fonts: ^1.1.0
-  audioplayers: ^0.15.1
+  google_fonts: ^4.0.4
+  audioplayers: ^4.0.1
+  flutter_launcher_icons:
+    git:
+      url: https://github.com/fluttercommunity/flutter_launcher_icons.git
+      ref: 26fedcee4b0e6f7a85f65f1fb48834a21f57e970
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  remove_alpha_ios: true
+  image_path: "assets/icon/icon.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  web:
+    generate: true
+    background_color: "#hexcode"
+    theme_color: "#hexcode"
+  windows:
+    generate: true
+    icon_size: 48 # min:48, max:256, default: 48
+  macos:
+    generate: true
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

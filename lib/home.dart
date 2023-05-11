@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'play.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
-import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'dart:core';
 import 'package:flutter/cupertino.dart';
@@ -97,9 +96,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // this audio player allows us to play a sound without holding up execution of our single thread
-  Future<AudioPlayer> startSound() async {
-    AudioCache cache = new AudioCache();
-    return await cache.play("start.mp3");
+  startSound() async {
+    AudioPlayer player = new AudioPlayer();
+    return player.play(AssetSource("start.mp3"));
   }
 
   // this widget defines the actions and appearance of each card in our deck
