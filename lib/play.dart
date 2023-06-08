@@ -187,8 +187,8 @@ class _PlayViewState extends State<PlayView> {
       }
       // add a delay or our poor single thread will get choked out lol
       await Future.delayed(Duration(milliseconds: 100));
-      print("yAxis: $yAxis");
-      print("zAxis: $zAxis");
+      // print("yAxis: $yAxis");
+      // print("zAxis: $zAxis");
 
       // Needed in case the accelerometer is not ready yet
       if (yAxis == null || zAxis == null) {

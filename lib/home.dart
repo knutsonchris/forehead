@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'deck.dart';
 import 'play.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
@@ -9,12 +10,6 @@ import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'dart:convert';
 
-// TODO: this is a super sloppy way to do things, would be nice to put this somewhere else
-Map<String, List<String>> decks = {
-// this is also super hacky, our deck card widget will key off of the "create new" string and open up an add new deck dialog instead of starting a game
-  "create new": [],
-};
-
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key}) : super(key: key);
 
@@ -23,66 +18,16 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  List<Deck> _decks = [];
+
+  Future<void> _loadDecks() async {
+    print("loading decks");
+    _decks = await loadDecks();
+  }
+
   @override
   void initState() {
     super.initState();
-    // TODO: this isn't needed here anymore since we load the decks with a FutureBuilder
-    loadDecks();
-  }
-
-  // loadDecks will grab word lists shipped as assets and slam them into that messy decks map
-  Future<void> loadDecks() async {
-    String threek = await rootBundle.loadString('assets/words/3k.txt');
-    String four66k = await rootBundle.loadString('assets/words/466k.txt');
-    String sevenk = await rootBundle.loadString('assets/words/7k.txt');
-    String tenk = await rootBundle.loadString('assets/words/10k.txt');
-    String animals = await rootBundle.loadString('assets/words/animals.txt');
-    String animals2 = await rootBundle.loadString('assets/words/animals2.txt');
-    String easy = await rootBundle.loadString('assets/words/easy.txt');
-    String medium = await rootBundle.loadString('assets/words/medium.txt');
-    String hard = await rootBundle.loadString('assets/words/hard.txt');
-    String objects = await rootBundle.loadString('assets/words/objects.txt');
-    String persons = await rootBundle.loadString('assets/words/persons.txt');
-    String verbs = await rootBundle.loadString('assets/words/verbs.txt');
-
-    // split the new line delimited strings into lists
-    decks["3k"] = threek.split("\n");
-    decks["466k"] = four66k.split("\n");
-    decks['7k'] = sevenk.split("\n");
-    decks['10k'] = tenk.split("\n");
-    decks['animals'] = animals.split("\n");
-    decks['animals 2'] = animals2.split("\n");
-    decks['easy'] = easy.split("\n");
-    decks['medium'] = medium.split("\n");
-    decks['hard'] = hard.split("\n");
-    decks['objects'] = objects.split("\n");
-    decks['persons'] = persons.split("\n");
-    decks['verbs'] = verbs.split("\n");
-
-    // look for and load any saved decks
-    Map<String, List<String>> savedDecks = await loadSavedDecks();
-    savedDecks.forEach((key, value) {
-      decks[key] = value;
-    });
-  }
-
-  Future<Map<String, List<String>>> loadSavedDecks() async {
-    Map<String, List<String>> thegoodies = {};
-    try {
-      final directory = await getApplicationDocumentsDirectory();
-      final path = directory.path;
-      File savedDecks = File('$path/decks.json');
-      String contents = savedDecks.readAsStringSync();
-      final parsed = json.decode(contents);
-      parsed.forEach((key, value) {
-        List<dynamic> dlist = value;
-        List<String> stringies = dlist.map((s) => s as String).toList();
-        thegoodies[key] = stringies;
-      });
-    } catch (e) {
-      print("could not load decks:" + e);
-    }
-    return thegoodies;
   }
 
   Future<void> saveNewDeck(String deckName, List<String> deckWords) async {
@@ -102,13 +47,12 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // this widget defines the actions and appearance of each card in our deck
-  Widget deckCard(int index) {
-    String deckName = decks.keys.toList()[index];
+  Widget deckCard(Deck d) {
     return GestureDetector(
       onTap: () {
         HapticFeedback.heavyImpact();
         // it really would be nice to come up with a better solution for this, but ya know, deadline development
-        if (deckName == "create new") {
+        if (d.name == "create new") {
           // this sloppily pulls up a full screen window from which we can add a new deck
           Navigator.of(context).push(new MaterialPageRoute<Null>(
               builder: (BuildContext context) {
@@ -167,8 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             onPressed: () {
                               setState(() {
                                 // grab the text from our TextEditingControllers and slam it into our sloppy map
-                                decks[deckNameController.text] =
-                                    textController.text.split("\n");
+                                d.words = textController.text.split("\n");
                                 Navigator.of(context).pop();
                               });
                               // slam the new deck into our saved decks json
@@ -196,23 +139,19 @@ class _MyHomePageState extends State<MyHomePage> {
             MaterialPageRoute(
                 builder: (context) =>
                     // bring up a new PlayView with the desired deck
-                    PlayView(title: deckName, words: decks[deckName])),
+                    PlayView(title: d.name, words: d.words)),
           );
         }
       },
       child: Container(
-          padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
-          height: double.maxFinite,
-          width: double.maxFinite,
-          child: Card(
-            elevation: 5,
-            child: Center(
-              child: Text(
-                decks.keys.toList()[index],
-                style: GoogleFonts.ubuntu(fontSize: 30),
-              ),
-            ),
-          )),
+        padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
+        height: double.maxFinite,
+        width: double.maxFinite,
+        child: Card(
+          elevation: 5,
+          child: Image.asset(d.imagepath), //decksImages[deckName],
+        ),
+      ),
     );
   }
 
@@ -223,8 +162,8 @@ class _MyHomePageState extends State<MyHomePage> {
       // horizontal, this produces 2 rows.
       crossAxisCount: 2,
       // Generate 100 widgets that display their index in the List.
-      children: List.generate(decks.length, (index) {
-        return Center(child: deckCard(index));
+      children: List.generate(_decks.length, (index) {
+        return Center(child: deckCard(_decks[index]));
       }),
     );
   }
@@ -233,7 +172,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     // this future builder will run the loadDecks function and wait for it to finish grabbing the word lists off thee disk before rendering  the cards
     return FutureBuilder(
-      future: loadDecks(),
+      future: _loadDecks(),
       builder: (context, snap) {
         if (snap.connectionState == ConnectionState.none &&
             snap.hasData == null) {
